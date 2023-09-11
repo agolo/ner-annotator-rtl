@@ -1,7 +1,10 @@
 <template>
   <div>
     <classes-block />
-    <div class="q-pa-lg" style="height:60vh; overflow-y:scroll;">
+    <div
+      class="q-pa-lg"
+      style="height: 60vh; overflow-y: scroll; direction: rtl"
+    >
       <component
         :is="t.type === 'token' ? 'Token' : 'TokenBlock'"
         :id="'t' + t.start"
@@ -56,7 +59,7 @@ import TreebankTokenizer from "treebank-tokenizer";
 
 export default {
   name: "AnnotationPage",
-  data: function() {
+  data: function () {
     return {
       tm: new TokenManager([]),
       currentSentence: {},
@@ -95,14 +98,14 @@ export default {
     },
     annotationPrecision() {
       this.tokenizeCurrentSentence();
-    }
+    },
   },
   created() {
     if (this.inputSentences.length) {
       this.tokenizeCurrentSentence();
     }
     document.addEventListener("mouseup", this.selectTokens);
-    document.addEventListener('keydown', this.keypress);
+    document.addEventListener("keydown", this.keypress);
   },
   beforeUnmount() {
     document.removeEventListener("mouseup", this.selectTokens);
@@ -112,19 +115,23 @@ export default {
     ...mapMutations(["nextSentence", "previousSentence", "resetIndex"]),
     keypress(event) {
       if (!this.enableKeyboardShortcuts) {
-        return
+        return;
       }
-      if (event.keyCode == 32) { // Space
+      if (event.keyCode == 32) {
+        // Space
         this.saveTags();
-      } else if (event.keyCode == 39) { // right arrow
+      } else if (event.keyCode == 39) {
+        // right arrow
         this.skipCurrentSentence();
-      } else if (event.keyCode == 37) { // left arrow
+      } else if (event.keyCode == 37) {
+        // left arrow
         this.backOneSentence();
-      } else if (event.keyCode == 82 || event.keyCode == 27) { // r / R or ESC
+      } else if (event.keyCode == 82 || event.keyCode == 27) {
+        // r / R or ESC
         this.resetBlocks();
       }
       // stop event from bubbling up
-      event.stopPropagation()
+      event.stopPropagation();
     },
     tokenizeCurrentSentence() {
       this.currentSentence = this.inputSentences[this.currentIndex];
@@ -133,8 +140,8 @@ export default {
       let tokens, spans;
 
       if (this.$store.state.annotationPrecision == "char") {
-        tokens = this.currentSentence.text.split('');
-        spans = []
+        tokens = this.currentSentence.text.split("");
+        spans = [];
         for (let i = 0; i < this.currentSentence.text.length; i++) {
           spans.push([i, i + 1]);
         }
@@ -157,13 +164,17 @@ export default {
       ) {
         return;
       }
-      
+
       const rangeStart = selection.getRangeAt(0);
       const rangeEnd = selection.getRangeAt(selection.rangeCount - 1);
       let start, end;
       try {
-        start = parseInt(rangeStart.startContainer.parentElement.id.replace("t", ""));
-        let offsetEnd = parseInt(rangeEnd.endContainer.parentElement.id.replace("t", ""));
+        start = parseInt(
+          rangeStart.startContainer.parentElement.id.replace("t", "")
+        );
+        let offsetEnd = parseInt(
+          rangeEnd.endContainer.parentElement.id.replace("t", "")
+        );
         end = offsetEnd + rangeEnd.endOffset;
       } catch {
         console.log("selected text were not tokens");
@@ -177,7 +188,7 @@ export default {
         selection.empty();
         return;
       }
-      
+
       this.tm.addNewBlock(start, end, this.currentClass);
       selection.empty();
     },
